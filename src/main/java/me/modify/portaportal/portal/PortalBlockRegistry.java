@@ -1,6 +1,5 @@
-package me.modify.portaportal.registry;
+package me.modify.portaportal.portal;
 
-import me.modify.portaportal.PortaPortal;
 import org.bukkit.Location;
 import java.util.HashMap;
 import java.util.Map;

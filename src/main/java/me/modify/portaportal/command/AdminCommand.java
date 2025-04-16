@@ -1,9 +1,7 @@
 package me.modify.portaportal.command;
 
-import me.modify.portaportal.item.HomePortal;
+import me.modify.portaportal.portal.item.HomePortal;
 import me.modify.portaportal.util.Messenger;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -22,7 +20,15 @@ public class AdminCommand extends PortaPortalCommand {
                 Messenger.sendMessage(player, "Please enter an argument", Messenger.Type.GENERAL);
             }
 
-            player.getInventory().addItem(new HomePortal());
+            if (args[0].equalsIgnoreCase("revert")) {
+                //PortalSchematic.revertPastes();
+            } else if (args[0].equalsIgnoreCase("get")) {
+                player.getInventory().addItem(new HomePortal());
+            }
+
+            Messenger.sendMessage(player, "Unknown command. /" + label + " ge", Messenger.Type.GENERAL);
+
+            return false;
         }
 
         return false;

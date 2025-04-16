@@ -1,9 +1,9 @@
-package me.modify.portaportal.util;
+package me.modify.portaportal.portal;
 
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
@@ -18,8 +18,11 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import me.modify.portaportal.PortaPortal;
 import me.modify.portaportal.exceptions.NullWorldException;
-import me.modify.portaportal.registry.PortalBlockRegistry;
+import me.modify.portaportal.portal.timer.PortalErasureTask;
+import me.modify.portaportal.portal.timer.PortalTaskManager;
+import me.modify.portaportal.util.PortaLogger;
 import org.bukkit.Location;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
@@ -74,48 +77,55 @@ public class PortalSchematic {
         return schematicFile;
     }
 
-    private Clipboard loadSchematic(File file) {
+    public Clipboard load() {
         Clipboard clipboard;
         try {
-            ClipboardFormat format = ClipboardFormats.findByFile(file);
-            if (format == null) {
-                throw new IOException("Unknown schematic format: " + file.getName());
+            File schematicFile = getFile();
+            if (schematicFile == null) {
+                return null;
             }
 
-            try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
+            ClipboardFormat format = ClipboardFormats.findByFile(schematicFile);
+            if (format == null) {
+                throw new IOException("Unknown schematic format: " + schematicFile.getName());
+            }
+
+            try (ClipboardReader reader = format.getReader(new FileInputStream(schematicFile))) {
                 clipboard = reader.read();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         return clipboard;
     }
 
-    private void pasteByHolder(ClipboardHolder holder, Location location)
+    private void pasteSchematic(ClipboardHolder holder, Location location)
             throws WorldEditException, NullWorldException {
 
         if (location.getWorld() == null) return;
 
         World weWorld = BukkitAdapter.adapt(location.getWorld());
-        EditSession editSession = WorldEdit.getInstance().newEditSession(weWorld);
+
+        WorldEditPlugin wePlugin = PortaPortal.getInstance().getWorldEditHook().getAPI();
+        EditSession editSession = wePlugin.getWorldEdit().newEditSession(weWorld);
+
         Operations.complete(holder.createPaste(editSession)
                 .to(BlockVector3.at(location.getX(), location.getY(), location.getZ()))
                 .ignoreAirBlocks(true)
                 .build());
+        editSession.flushQueue();
 
-        editSession.close();
+        PortalTaskManager.getInstance().add(new PortalErasureTask(editSession, holder, weWorld));
     }
 
-    public void pastePortalFacingPlayer(Player player, Location pasteLocation) {
+    public void pasteSchematicFacingPlayer(Player player, Location pasteLocation) {
+        Clipboard clipboard = load();
+        if (clipboard == null) {
+            return;
+        }
+
         float playerYaw = player.getLocation().getYaw(); // Get player's yaw rotation
         int rotationDegrees = getRotationAngle(playerYaw);
-
-        // Get schematics file using schematic name
-        File schematicFile = getFile();
-
-        // Get clipboard using schematic file
-        Clipboard clipboard = loadSchematic(schematicFile);
 
         // Create abstract entity holding the clipboard
         ClipboardHolder holder = new ClipboardHolder(clipboard);
@@ -137,13 +147,16 @@ public class PortalSchematic {
             try {
                 // Replace barrier blocks with air
                 if (blockState.getBlockType() == BlockTypes.BARRIER) {
-                    clipboard.setBlock(blockVector3, BlockTypes.AIR.getDefaultState());
+                    //clipboard.setBlock(blockVector3, BlockTypes.AIR.getDefaultState());
+                    clipboard.setBlock(blockVector3.x(), blockVector3.y(), blockVector3.z(),
+                            BlockTypes.AIR.getDefaultState());
                     return;
                 }
 
                 // Replace air blocks with water (portal block)
                 if (blockState.getBlockType() == BlockTypes.AIR) {
-                    if (clipboard.setBlock(blockVector3, BlockTypes.WATER.getDefaultState())) {
+                    if (clipboard.setBlock(blockVector3.x(), blockVector3.y(), blockVector3.z(),
+                            BlockTypes.WATER.getDefaultState())) {
                         registerPortalBlock(player, blockVector3, clipboard, pasteLocation, rotationDegrees);
                     }
                 }
@@ -154,11 +167,25 @@ public class PortalSchematic {
 
         // Paste the clipboard with respect to holder
         try {
-            pasteByHolder(holder, pasteLocation);
+            pasteSchematic(holder, pasteLocation);
             System.out.println("Pasting schematic at: " + pasteLocation);
         } catch (WorldEditException | NullWorldException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void registerPortalBlock(Player player, BlockVector3 blockVector3, Clipboard clipboard,
+                                     Location pasteLocation, int rotationDegrees) {
+        double x = pasteLocation.getX() + (blockVector3.x() - clipboard.getOrigin().x());
+        double y = pasteLocation.getY() + (blockVector3.y() - clipboard.getOrigin().y());
+        double z = pasteLocation.getZ() + (blockVector3.z() - clipboard.getOrigin().z());
+
+        Location portalLocation = new Location(pasteLocation.getWorld(), x, y, z);
+        Location axis = new Location(pasteLocation.getWorld(), pasteLocation.getBlockX(),
+                pasteLocation.getBlockY(), pasteLocation.getBlockZ());
+        Location rotatedLocation = rotateLocation(portalLocation, axis, rotationDegrees);
+
+        PortalBlockRegistry.getInstance().addPortal(rotatedLocation, player.getUniqueId());
     }
 
     private Location rotateLocation(Location loc, Location axis, double angle) {
@@ -183,20 +210,6 @@ public class PortalSchematic {
         return rotatedVector.add(axis.toVector()).toLocation(loc.getWorld());
     }
 
-    private void registerPortalBlock(Player player, BlockVector3 blockVector3, Clipboard clipboard,
-                                            Location pasteLocation, int rotationDegrees) {
-        double x = pasteLocation.getX() + (blockVector3.x() - clipboard.getOrigin().x());
-        double y = pasteLocation.getY() + (blockVector3.y() - clipboard.getOrigin().y());
-        double z = pasteLocation.getZ() + (blockVector3.z() - clipboard.getOrigin().z());
-
-        Location portalLocation = new Location(pasteLocation.getWorld(), x, y, z);
-        Location axis = new Location(pasteLocation.getWorld(), pasteLocation.getBlockX(),
-                pasteLocation.getBlockY(), pasteLocation.getBlockZ());
-        Location rotatedLocation = rotateLocation(portalLocation, axis, rotationDegrees);
-
-        PortalBlockRegistry.getInstance().addPortal(rotatedLocation, player.getUniqueId());
-    }
-
     private int getRotationAngle(float yaw) {
         yaw = (yaw % 360 + 360) % 360;
         if (yaw >= 45 && yaw < 135) return 270; // West
@@ -204,6 +217,8 @@ public class PortalSchematic {
         if (yaw >= 225 && yaw < 315) return 90; // East
         return 0; // South (default)
     }
+
+    private record Mapping(BlockData original, BlockData schematic) {}
 
 
 }

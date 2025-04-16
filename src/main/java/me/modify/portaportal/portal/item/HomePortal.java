@@ -1,9 +1,7 @@
-package me.modify.portaportal.item;
+package me.modify.portaportal.portal.item;
 
 import me.modify.portaportal.util.ColorFormat;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -21,7 +19,6 @@ public class HomePortal extends ItemStack {
         meta.setLore(ColorFormat.formatList(itemLore));
         meta.setDisplayName(ColorFormat.format(itemName));
         setItemMeta(meta);
-
         setAmount(1);
     }
 }
