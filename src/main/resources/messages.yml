@@ -1,0 +1,15 @@
+prefix:
+  general: "&5&lPortaPortal &7➤ "
+  error: "&4&lERROR &7➤ "
+
+error:
+  insufficient-perms: "Insufficient permission."
+  invalid-usage: "Invalid usage: %USAGE%"
+  player-only: "You must be a player to execute this command."
+  player-not-found: "Player not found."
+  invalid-quantity: "Quantity is not an integer."
+
+general:
+  portal-teleport: "Successful teleport to %DESTINATION%."
+  reload-success: "Configuration files reloaded."
+  item-given: "Given %AMOUNT% portal item(s) to %PLAYER%"

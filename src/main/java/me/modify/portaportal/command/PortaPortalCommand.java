@@ -34,7 +34,7 @@ public abstract class PortaPortalCommand extends BukkitCommand {
         }
 
         if (!hasPermission(sender)) {
-            Messenger.sendMessage(sender, "Insufficient permission.", Messenger.Type.ERROR);
+            Messenger.sendMessage(sender, Messenger.Type.ERROR, "insufficient-perms");
             return false;
         }
 
