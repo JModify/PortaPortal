@@ -6,9 +6,10 @@ import me.modify.portaportal.command.AdminCommand;
 import me.modify.portaportal.command.PortaPortalCommand;
 import me.modify.portaportal.data.flatfile.ConfigFile;
 import me.modify.portaportal.data.flatfile.MessageFile;
+import me.modify.portaportal.hook.EssentialsHook;
 import me.modify.portaportal.hook.FastAsyncWorldEditHook;
+import me.modify.portaportal.hook.PortaPortalHook;
 import me.modify.portaportal.portal.PortalListener;
-import me.modify.portaportal.listener.ProjectileListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class PortaPortal extends JavaPlugin {
@@ -25,6 +26,9 @@ public final class PortaPortal extends JavaPlugin {
     @Getter
     private final FastAsyncWorldEditHook worldEditHook = new FastAsyncWorldEditHook();
 
+    @Getter
+    private final EssentialsHook essentialsHook = new EssentialsHook();
+
     @Override
     public void onEnable() {
         setInstance(this);
@@ -36,6 +40,7 @@ public final class PortaPortal extends JavaPlugin {
         registerListeners();
 
         worldEditHook.hook();
+        essentialsHook.hook();
     }
 
     @Override
@@ -48,7 +53,6 @@ public final class PortaPortal extends JavaPlugin {
     }
 
     private void registerListeners() {
-        getServer().getPluginManager().registerEvents(new ProjectileListener(), this);
         getServer().getPluginManager().registerEvents(new PortalListener(), this);
     }
 }

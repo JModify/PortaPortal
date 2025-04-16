@@ -3,5 +3,6 @@ version: '${project.version}'
 main: me.modify.portaportal.PortaPortal
 api-version: '1.21'
 depend: [FastAsyncWorldEdit]
+softdepend: [Essentials]
 authors: [modify]
 description: Throwable portal items to teleport players to different locations.

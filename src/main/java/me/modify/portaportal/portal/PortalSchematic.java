@@ -1,6 +1,8 @@
 package me.modify.portaportal.portal;
 
+import com.fastasyncworldedit.core.FaweAPI;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -99,15 +101,15 @@ public class PortalSchematic {
         return clipboard;
     }
 
-    private void pasteSchematic(ClipboardHolder holder, Location location)
+    private void pasteSchematic(Player player, ClipboardHolder holder, Location location)
             throws WorldEditException, NullWorldException {
 
         if (location.getWorld() == null) return;
 
         World weWorld = BukkitAdapter.adapt(location.getWorld());
 
-        WorldEditPlugin wePlugin = PortaPortal.getInstance().getWorldEditHook().getAPI();
-        EditSession editSession = wePlugin.getWorldEdit().newEditSession(weWorld);
+        WorldEdit worldEdit = PortaPortal.getInstance().getWorldEditHook().getAPI().getWorldEdit();
+        EditSession editSession = worldEdit.newEditSession(weWorld);
 
         Operations.complete(holder.createPaste(editSession)
                 .to(BlockVector3.at(location.getX(), location.getY(), location.getZ()))
@@ -115,7 +117,7 @@ public class PortalSchematic {
                 .build());
         editSession.flushQueue();
 
-        PortalTaskManager.getInstance().add(new PortalErasureTask(editSession, holder, weWorld));
+        PortalTaskManager.getInstance().add(new PortalErasureTask(player.getUniqueId(), editSession, holder, weWorld));
     }
 
     public void pasteSchematicFacingPlayer(Player player, Location pasteLocation) {
@@ -167,7 +169,7 @@ public class PortalSchematic {
 
         // Paste the clipboard with respect to holder
         try {
-            pasteSchematic(holder, pasteLocation);
+            pasteSchematic(player, holder, pasteLocation);
             System.out.println("Pasting schematic at: " + pasteLocation);
         } catch (WorldEditException | NullWorldException e) {
             throw new RuntimeException(e);
@@ -217,8 +219,6 @@ public class PortalSchematic {
         if (yaw >= 225 && yaw < 315) return 90; // East
         return 0; // South (default)
     }
-
-    private record Mapping(BlockData original, BlockData schematic) {}
 
 
 }

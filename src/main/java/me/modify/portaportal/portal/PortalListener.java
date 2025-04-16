@@ -1,6 +1,5 @@
 package me.modify.portaportal.portal;
 
-import me.modify.portaportal.portal.item.HomePortal;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -23,7 +22,7 @@ public class PortalListener implements Listener {
         if (entity.getType() != EntityType.SNOWBALL) return;
 
         Snowball snowball = (Snowball) entity;
-        if (!snowball.getItem().isSimilar(new HomePortal())) return;
+        if (!PortalItem.isPortalitem(snowball.getItem())) return;
 
         Block block = event.getHitBlock();
         if (block == null) return;
@@ -59,7 +58,8 @@ public class PortalListener implements Listener {
         if (player.getLocation().getBlock().getType() != Material.WATER) return;
         if (!PortalBlockRegistry.getInstance().isPortal(player.getLocation())) return;
 
-        player.sendMessage("Teleported to Home!");
+        PortalDestination destination = new PortalDestination(player);
+        destination.teleport();
     }
 
 }

@@ -1,6 +1,7 @@
 package me.modify.portaportal.portal.timer;
 
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.session.ClipboardHolder;
@@ -42,9 +43,9 @@ public class PortalErasureTask implements Runnable {
         time += 1;
         PortaLogger.info("[PortalErasureTask] " + time + " seconds");
         if (time >= eraseTime) {
-            WorldEditPlugin wePlugin = PortaPortal.getInstance().getWorldEditHook().getAPI();
+            WorldEdit worldEdit = PortaPortal.getInstance().getWorldEditHook().getAPI().getWorldEdit();
 
-            EditSession undoSession = wePlugin.getWorldEdit().newEditSession(world);
+            EditSession undoSession = worldEdit.newEditSession(world);
             session.undo(undoSession);
             session.close();
 
