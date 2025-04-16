@@ -15,14 +15,16 @@ public class AdminCommand extends PortaPortalCommand {
     public boolean execute(CommandSender commandSender, String label, String[] args) {
         super.execute(commandSender, label, args);
 
+        if (args.length == 0) {
+
+        }
+
         if (commandSender instanceof Player player) {
             if (args.length == 0) {
                 Messenger.sendMessage(player, "Please enter an argument", Messenger.Type.GENERAL);
             }
 
-            if (args[0].equalsIgnoreCase("revert")) {
-                //PortalSchematic.revertPastes();
-            } else if (args[0].equalsIgnoreCase("get")) {
+            if (args[0].equalsIgnoreCase("get")) {
                 player.getInventory().addItem(new PortalItem());
             }
 
@@ -32,5 +34,9 @@ public class AdminCommand extends PortaPortalCommand {
         }
 
         return false;
+    }
+
+    private void printMenu(CommandSender commandSender) {
+
     }
 }

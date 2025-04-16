@@ -1,5 +1,5 @@
 name: PortaPortal
-version: '${project.version}'
+version: ${project.version}
 main: me.modify.portaportal.PortaPortal
 api-version: '1.21'
 depend: [FastAsyncWorldEdit]

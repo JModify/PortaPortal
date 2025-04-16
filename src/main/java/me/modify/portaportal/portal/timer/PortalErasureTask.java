@@ -52,8 +52,8 @@ public class PortalErasureTask implements Runnable {
             Operations.complete(holder.createPaste(undoSession).build());
             undoSession.close();
 
-            PortalTaskManager.getInstance().remove(taskId);
             PortalBlockRegistry.getInstance().removePortal(playerId);
+            PortalTaskManager.getInstance().remove(taskId);
         }
     }
 }

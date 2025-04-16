@@ -1,7 +1,9 @@
 portal:
+  # Duration a portal will stay open for before it disappears.
+  duration: 5
   destination:
     # Destination types: SPAWN, HOME, BED, CUSTOM
-    type: HOME
+    type: BED
     # Teleports player to this location ONLY if type is set to CUSTOM
     custom:
       world: world

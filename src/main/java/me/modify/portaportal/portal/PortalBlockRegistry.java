@@ -2,6 +2,7 @@ package me.modify.portaportal.portal;
 
 import org.bukkit.Location;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -29,9 +30,12 @@ public class PortalBlockRegistry {
     }
 
     public void removePortal(UUID uuid) {
-        for (Map.Entry<Location, UUID> entry : registry.entrySet()) {
+        Iterator<Map.Entry<Location, UUID>> iterator = registry.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Location, UUID> entry = iterator.next();
+
             if (entry.getValue().equals(uuid)) {
-                registry.remove(entry.getKey());
+                iterator.remove();
             }
         }
     }

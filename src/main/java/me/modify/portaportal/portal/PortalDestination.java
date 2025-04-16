@@ -1,10 +1,8 @@
 package me.modify.portaportal.portal;
 
-import com.earth2me.essentials.Essentials;
-import lombok.Getter;
 import me.modify.portaportal.PortaPortal;
+import me.modify.portaportal.hook.essentials.EssentialsHandler;
 import me.modify.portaportal.util.PortaLogger;
-import net.ess3.api.IUser;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -36,7 +34,14 @@ public class PortalDestination {
     private Location getLocation() {
         switch (portalDestination) {
             case "HOME" -> {
-                return getEssentialsHome();
+                PortaPortal plugin = PortaPortal.getInstance();
+                if (!plugin.getEssentialsHook().isHooked()) {
+                    PortaLogger.error("Destination Teleport Fail - Essentials is not hooked " +
+                            "[" + player.getUniqueId() + "]");
+                    return player.getWorld().getSpawnLocation();
+                }
+
+                return EssentialsHandler.getEssentialsHome(player);
             }
             case "BED" -> {
                 return player.getBedLocation();
@@ -66,33 +71,5 @@ public class PortalDestination {
         float yaw = (float) configFile.getDouble("portal.destination.custom.yaw", 0);
         float pitch = (float) configFile.getDouble("portal.destination.custom.pitch", 0);
         return new Location(world, x, y, z, yaw, pitch);
-    }
-
-    private Location getEssentialsHome() {
-        // Default location is SPAWN
-        Location defaultDestination = player.getWorld().getSpawnLocation();
-
-        PortaPortal plugin = PortaPortal.getInstance();
-        if (!plugin.getEssentialsHook().isHooked()) {
-            PortaLogger.error("Destination Teleport Fail - Essentials is not hooked " +
-                    "[" + player.getUniqueId() + "]");
-            return defaultDestination;
-        }
-        Essentials api = plugin.getEssentialsHook().getAPI();
-        IUser user = api.getUser(player.getUniqueId());
-
-        if (user == null) {
-            PortaLogger.error("Destination Teleport Fail - Essentials user could not be found " +
-                    "[" + player.getUniqueId() + "]");
-            return defaultDestination;
-        }
-
-        try {
-            return user.getHome(user.getHomes().getFirst());
-        } catch (Exception e) {
-            PortaLogger.warning("Destination Teleport Warning - No home for user found. " +
-                    "[" + player.getUniqueId() + "]");
-            return defaultDestination;
-        }
     }
 }
