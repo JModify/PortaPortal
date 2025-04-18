@@ -15,7 +15,7 @@ import java.util.Map;
 public class AdminCommand extends PortaPortalCommand {
 
     public AdminCommand() {
-        super("portaportaladmin", "portaportal.admin", "ppa");
+        super("portaportaladmin", "portaportal.admin", "ppa", "portaladmin", "ppadmin");
     }
 
     @Override

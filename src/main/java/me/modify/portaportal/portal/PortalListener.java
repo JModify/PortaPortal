@@ -1,6 +1,7 @@
 package me.modify.portaportal.portal;
 
 import me.modify.portaportal.PortaPortal;
+import me.modify.portaportal.util.Messenger;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -11,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
@@ -92,6 +94,19 @@ public class PortalListener implements Listener {
 
         PortalDestination destination = new PortalDestination(player);
         destination.teleport();
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        ItemStack item = event.getItem();
+        if (item == null) return;
+
+        Player player = event.getPlayer();
+        if (player.hasPermission("portaportal.use")) return;
+        if (PortalItem.isPortalitem(item)) {
+            event.setCancelled(true);
+            Messenger.sendMessage(player, Messenger.Type.ERROR, "insufficient-perms");
+        }
     }
 
 }
