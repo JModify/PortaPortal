@@ -11,8 +11,13 @@ import lombok.Getter;
 import lombok.Setter;
 import me.modify.portaportal.PortaPortal;
 import me.modify.portaportal.portal.PortalBlockRegistry;
+import me.modify.portaportal.util.Messenger;
 import me.modify.portaportal.util.PortaLogger;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
+import java.util.Map;
 import java.util.UUID;
 
 public class PortalErasureTask implements Runnable {
@@ -36,13 +41,16 @@ public class PortalErasureTask implements Runnable {
         this.world = world;
 
         this.time = 0;
-        this.eraseTime = 5;
+        this.eraseTime = PortaPortal.getInstance().getConfigFile().getYaml().getInt("portal.duration", 5);
+        sendCountdown(0);
     }
 
     @Override
     public void run() {
+
+        sendCountdown(1);
+
         time += 1;
-        PortaLogger.info("[PortalErasureTask] " + time + " seconds");
         if (time >= eraseTime) {
             WorldEdit worldEdit = PortaPortal.getInstance().getWorldEditHook().getAPI().getWorldEdit();
 
@@ -59,5 +67,20 @@ public class PortalErasureTask implements Runnable {
             PortalBlockRegistry.getInstance().removePortal(playerId);
             PortalTaskManager.getInstance().remove(taskId);
         }
+    }
+
+    private void sendCountdown(int offset) {
+        FileConfiguration fileConfiguration = PortaPortal.getInstance().getConfigFile().getYaml();
+        boolean countdown = fileConfiguration.getBoolean("portal.countdown");
+        if (!countdown) return;
+
+        Player player = Bukkit.getPlayer(playerId);
+        if (player == null) return;
+
+        int remainingTime = (eraseTime - offset) - time;
+        if (remainingTime == 0) return;
+
+        Map<String, String> timePlaceholder = Map.of("%TIME%", String.valueOf(remainingTime));
+        Messenger.sendMessage(player, Messenger.Type.GENERAL, "portal-countdown", timePlaceholder);
     }
 }

@@ -14,6 +14,7 @@ public class PortalDestinationRegistry {
     private static PortalDestinationRegistry instance;
 
     private final Map<UUID, Destination> registry;
+
     public PortalDestinationRegistry() {
         registry = new HashMap<>();
     }

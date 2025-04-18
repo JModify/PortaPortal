@@ -1,6 +1,6 @@
 prefix:
-  general: "&5&lPortaPortal &7➤ "
-  error: "&4&lERROR &7➤ "
+  general: "&5&lPortaPortal &7➤ &d"
+  error: "&4&lERROR &7➤ &c"
 
 error:
   insufficient-perms: "Insufficient permission."
@@ -10,6 +10,7 @@ error:
   invalid-quantity: "Quantity is not an integer."
 
 general:
-  portal-teleport-success: "Successful teleport to %DESTINATION%."
+  portal-teleport: "Teleported to %DESTINATION%."
   reload-success: "Configuration files reloaded."
   item-given: "Given %AMOUNT% portal item(s) to %PLAYER%"
+  portal-countdown: "Portal disappears in %TIME% second(s)."

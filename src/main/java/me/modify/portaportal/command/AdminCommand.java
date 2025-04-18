@@ -6,6 +6,7 @@ import me.modify.portaportal.util.Messenger;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +66,31 @@ public class AdminCommand extends PortaPortalCommand {
 
         sendUsageMessage(commandSender, "/" + label + " <reload/give/help>");
         return false;
+    }
+
+    @Override
+    public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
+        List<String> completions = new ArrayList<>();
+        if (!hasPermission(sender)) return completions;
+
+        if (args.length == 1) {
+            List<String> subCommands = List.of("reload", "give", "help");
+            for (String sub : subCommands) {
+                if (sub.toLowerCase().startsWith(args[0].toLowerCase())) {
+                    completions.add(sub);
+                }
+            }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("give")) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (player.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
+                    completions.add(player.getName());
+                }
+            }
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("give")) {
+            completions.addAll(List.of("1", "16", "32", "64"));
+        }
+
+        return completions;
     }
 
     private void sendUsageMessage(CommandSender sender, String usageMessage) {

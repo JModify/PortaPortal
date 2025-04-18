@@ -41,7 +41,7 @@ public abstract class PortaPortalCommand extends BukkitCommand {
         return true;
     }
 
-    private boolean hasPermission(CommandSender sender) {
+    protected boolean hasPermission(CommandSender sender) {
         return sender.hasPermission(Objects.requireNonNull(getPermission()));
     }
 

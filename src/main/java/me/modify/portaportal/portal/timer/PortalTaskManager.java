@@ -23,7 +23,7 @@ public class PortalTaskManager {
     }
 
     public void add(PortalErasureTask task) {
-        int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(PortaPortal.getInstance(), task, 0, 20L);
+        int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(PortaPortal.getInstance(), task, 20L, 20L);
         task.setTaskId(id);
         tasks.put(id, task);
     }

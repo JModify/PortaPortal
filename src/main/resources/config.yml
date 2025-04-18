@@ -10,6 +10,8 @@ portal:
       - "&7Right click to throw portal"
   # Duration a portal will stay open for before it disappears.
   duration: 5
+  # Should a portal disappear countdown should be sent to player.
+  countdown: true
   # Portal destination configuration
   destination:
     # Destination types: SPAWN, HOME, BED, CUSTOM
