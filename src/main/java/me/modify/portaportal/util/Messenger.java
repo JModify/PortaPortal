@@ -4,6 +4,7 @@ import me.modify.portaportal.PortaPortal;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.util.List;
 import java.util.Map;
 
 public class Messenger {
@@ -31,9 +32,9 @@ public class Messenger {
         sendMessage(sender, message, type, placeholders);
     }
 
-    public static void sendMessageList(CommandSender sender, Type type, String... messages) {
+    public static void sendMessageList(CommandSender sender, List<String> messages) {
         for (String message : messages) {
-            sendMessage(sender, message, type);
+            sender.sendMessage(ColorFormat.format(message));
         }
     }
 

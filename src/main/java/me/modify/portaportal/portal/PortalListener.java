@@ -1,7 +1,9 @@
 package me.modify.portaportal.portal;
 
+import me.modify.portaportal.PortaPortal;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -10,9 +12,15 @@ import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.projectiles.ProjectileSource;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 public class PortalListener implements Listener {
 
@@ -33,7 +41,8 @@ public class PortalListener implements Listener {
         if (projectile instanceof EnderPearl pearl) {
             if (!PortalItem.isPortalitem(pearl.getItem())) return;
 
-            // Flag EnderPearl Teleport Cancel
+            NamespacedKey key = new NamespacedKey(PortaPortal.getInstance(), "block-teleport");
+            player.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, 1);
         }
 
         Block block = event.getHitBlock();
@@ -46,6 +55,21 @@ public class PortalListener implements Listener {
         pasteLocation.setY(block.getY() + 2);
 
         portalSchematic.pasteSchematicFacingPlayer(player, pasteLocation);
+    }
+
+    @EventHandler
+    public void onTeleport(PlayerTeleportEvent event) {
+        if (!event.getCause().equals(PlayerTeleportEvent.TeleportCause.ENDER_PEARL)) return;
+
+        Player player = event.getPlayer();
+
+        NamespacedKey key = new NamespacedKey(PortaPortal.getInstance(), "block-teleport");
+        PersistentDataContainer persistentDataContainer = player.getPersistentDataContainer();
+
+        if (persistentDataContainer.has(key, PersistentDataType.INTEGER)) {
+            event.setCancelled(true);
+            persistentDataContainer.remove(key);
+        }
     }
 
     @EventHandler

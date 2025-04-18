@@ -7,8 +7,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.sound.sampled.Port;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class AdminCommand extends PortaPortalCommand {
@@ -28,6 +28,9 @@ public class AdminCommand extends PortaPortalCommand {
                 plugin.getMessageFile().reload();
 
                 Messenger.sendMessage(commandSender, Messenger.Type.GENERAL, "reload-success");
+                return true;
+            } else if (args[0].equalsIgnoreCase("help")) {
+                printHelpMenu(commandSender);
                 return true;
             }
         }
@@ -50,6 +53,7 @@ public class AdminCommand extends PortaPortalCommand {
 
                 if (amount == -1) {
                     Messenger.sendMessage(commandSender, Messenger.Type.ERROR, "invalid-quantity");
+                    return true;
                 }
 
                 player.getInventory().addItem(new PortalItem());
@@ -61,20 +65,6 @@ public class AdminCommand extends PortaPortalCommand {
 
         sendUsageMessage(commandSender, "/" + label + " <reload/give/help>");
         return false;
-
-//        if (commandSender instanceof Player player) {
-//            if (args.length == 0) {
-//                Messenger.sendMessage(player, "Please enter an argument", Messenger.Type.GENERAL);
-//            }
-//
-//            if (args[0].equalsIgnoreCase("get")) {
-//                player.getInventory().addItem(new PortalItem());
-//            }
-//
-//            Messenger.sendMessage(player, "Unknown command. /" + label + " ge", Messenger.Type.GENERAL);
-//
-//            return false;
-//        }
     }
 
     private void sendUsageMessage(CommandSender sender, String usageMessage) {
@@ -82,7 +72,15 @@ public class AdminCommand extends PortaPortalCommand {
         Messenger.sendMessage(sender, Messenger.Type.ERROR, "invalid-usage", usagePlaceholder);
     }
 
-    private void printMenu(CommandSender commandSender) {
-
+    private void printHelpMenu(CommandSender commandSender) {
+        List<String> helpMenu = new ArrayList<>();
+        helpMenu.add(" ");
+        helpMenu.add("&7&m-----&r &5&lPortal Admin Help &r&7&m-----");
+        helpMenu.add("&5/ppa reload &f- &dReload plugin configurations.");
+        helpMenu.add("&5/ppa help &f- &dDisplay this help menu in chat.");
+        helpMenu.add("&5/ppa give <player> <amount> &f- &dGive portal item to player.");
+        helpMenu.add("&7&m------------------------------");
+        helpMenu.add(" ");
+        Messenger.sendMessageList(commandSender, helpMenu);
     }
 }
