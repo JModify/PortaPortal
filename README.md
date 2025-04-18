@@ -9,9 +9,9 @@ Plugin requires WorldEdit to be installed due to schematic integration.
 Plugin supports EssentialsX integration, allowing you to set portal destinations to Essential's homes.
 
 ## Commands
-| Command           | Sub Commands       | Description           |
-| ----------------- | ------------------ | --------------------- |
-| /portaportaladmin | help, reload, give | Plugin admin command. |
+| Command           | Sub Commands       | Description           | Aliases                         |
+| ----------------- | ------------------ | --------------------- | ------------------------------- |
+| /portaportaladmin | help, reload, give | Plugin admin command. | /ppa, /portaladmin, /ppadmin    |
 
 ## Permissions
 | Node              | Description                  |
