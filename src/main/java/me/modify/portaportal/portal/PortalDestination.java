@@ -1,17 +1,23 @@
 package me.modify.portaportal.portal;
 
+import lombok.Setter;
 import me.modify.portaportal.PortaPortal;
 import me.modify.portaportal.hook.essentials.EssentialsHandler;
+import me.modify.portaportal.util.Messenger;
 import me.modify.portaportal.util.PortaLogger;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import java.util.Map;
+
 public class PortalDestination {
 
     private Player player;
-    private String portalDestination;
+
+    @Setter
+    private Destination portalDestination;
 
     public PortalDestination(Player player) {
         this.player = player;
@@ -20,39 +26,42 @@ public class PortalDestination {
 
     public void teleport() {
         player.teleport(getLocation());
-        PortaLogger.info("Teleported to " + portalDestination);
+        Map<String, String> teleportPlaceholders = Map.of("%DESTINATION%", portalDestination.name());
+        Messenger.sendMessage(player, Messenger.Type.GENERAL, "portal-teleport", teleportPlaceholders);
     }
 
-    private String getDestinationType() {
-        PortaPortal plugin = PortaPortal.getInstance();
-        FileConfiguration configFile = plugin.getConfigFile().getYaml();
-
-        String destination = configFile.getString("portal.destination.type", "SPAWN");
-        return destination.toUpperCase();
+    private Destination getDestinationType() {
+        return PortalDestinationRegistry.getInstance().getDestination(player.getUniqueId());
     }
 
     private Location getLocation() {
+        Location defaultDestination = player.getWorld().getSpawnLocation();
         switch (portalDestination) {
-            case "HOME" -> {
+            case HOME -> {
                 PortaPortal plugin = PortaPortal.getInstance();
                 if (!plugin.getEssentialsHook().isHooked()) {
                     PortaLogger.error("Destination Teleport Fail - Essentials is not hooked " +
                             "[" + player.getUniqueId() + "]");
-                    return player.getWorld().getSpawnLocation();
+                    return defaultDestination;
                 }
 
                 return EssentialsHandler.getEssentialsHome(player);
             }
-            case "BED" -> {
-                return player.getBedLocation();
+            case BED -> {
+                // If bed respawn point is not set
+                if (player.getRespawnLocation() == null) {
+                    setPortalDestination(Destination.SPAWN);
+                    return defaultDestination;
+                }
+                return player.getRespawnLocation();
             }
-            case "CUSTOM" -> {
+            case CUSTOM -> {
                 return readCustomDestinationConfig(); // use custom config location
             }
 
             // Default location is SPAWN
             default -> {
-                return player.getWorld().getSpawnLocation();
+                return defaultDestination;
             }
         }
     }

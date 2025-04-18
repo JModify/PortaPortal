@@ -1,11 +1,9 @@
 package me.modify.portaportal.portal;
 
-import com.fastasyncworldedit.core.FaweAPI;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
@@ -110,12 +108,13 @@ public class PortalSchematic {
 
         WorldEdit worldEdit = PortaPortal.getInstance().getWorldEditHook().getAPI().getWorldEdit();
         EditSession editSession = worldEdit.newEditSession(weWorld);
+        //editSession.setTrackingHistory(true);
 
         Operations.complete(holder.createPaste(editSession)
                 .to(BlockVector3.at(location.getX(), location.getY(), location.getZ()))
                 .ignoreAirBlocks(true)
                 .build());
-        editSession.flushQueue();
+        editSession.close();
 
         PortalTaskManager.getInstance().add(new PortalErasureTask(player.getUniqueId(), editSession, holder, weWorld));
     }
@@ -150,15 +149,13 @@ public class PortalSchematic {
                 // Replace barrier blocks with air
                 if (blockState.getBlockType() == BlockTypes.BARRIER) {
                     //clipboard.setBlock(blockVector3, BlockTypes.AIR.getDefaultState());
-                    clipboard.setBlock(blockVector3.x(), blockVector3.y(), blockVector3.z(),
-                            BlockTypes.AIR.getDefaultState());
+                    clipboard.setBlock(blockVector3, BlockTypes.AIR.getDefaultState());
                     return;
                 }
 
                 // Replace air blocks with water (portal block)
                 if (blockState.getBlockType() == BlockTypes.AIR) {
-                    if (clipboard.setBlock(blockVector3.x(), blockVector3.y(), blockVector3.z(),
-                            BlockTypes.WATER.getDefaultState())) {
+                    if (clipboard.setBlock(blockVector3, BlockTypes.WATER.getDefaultState())) {
                         registerPortalBlock(player, blockVector3, clipboard, pasteLocation, rotationDegrees);
                     }
                 }

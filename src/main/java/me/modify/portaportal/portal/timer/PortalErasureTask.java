@@ -2,6 +2,7 @@ package me.modify.portaportal.portal.timer;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.session.ClipboardHolder;
@@ -47,10 +48,13 @@ public class PortalErasureTask implements Runnable {
 
             EditSession undoSession = worldEdit.newEditSession(world);
             session.undo(undoSession);
-            session.close();
 
-            Operations.complete(holder.createPaste(undoSession).build());
-            undoSession.close();
+            try {
+                Operations.complete(holder.createPaste(undoSession).build());
+                undoSession.close();
+            } catch (WorldEditException e) {
+                throw new RuntimeException(e);
+            }
 
             PortalBlockRegistry.getInstance().removePortal(playerId);
             PortalTaskManager.getInstance().remove(taskId);

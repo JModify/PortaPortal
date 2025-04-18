@@ -1,8 +1,8 @@
 name: PortaPortal
-version: ${project.version}
+version: 1.0.0
 main: me.modify.portaportal.PortaPortal
 api-version: '1.21'
-depend: [FastAsyncWorldEdit]
+depend: [WorldEdit]
 softdepend: [Essentials]
 authors: [modify]
 description: Throwable portal items to teleport players to different locations.

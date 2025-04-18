@@ -1,6 +1,16 @@
+# All portal related configuration
 portal:
+  item:
+    # Portal item display name
+    name: "&5&lPortal"
+    # Valid materials: SNOWBALL, ENDER_PEARL, EGG
+    material: ENDER_PEARL
+    # Portal item lore
+    lore:
+      - "&7Right click to throw portal"
   # Duration a portal will stay open for before it disappears.
   duration: 5
+  # Portal destination configuration
   destination:
     # Destination types: SPAWN, HOME, BED, CUSTOM
     type: BED

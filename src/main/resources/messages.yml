@@ -10,6 +10,6 @@ error:
   invalid-quantity: "Quantity is not an integer."
 
 general:
-  portal-teleport: "Successful teleport to %DESTINATION%."
+  portal-teleport-success: "Successful teleport to %DESTINATION%."
   reload-success: "Configuration files reloaded."
   item-given: "Given %AMOUNT% portal item(s) to %PLAYER%"
