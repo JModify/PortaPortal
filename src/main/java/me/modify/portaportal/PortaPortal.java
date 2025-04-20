@@ -6,7 +6,7 @@ import me.modify.portaportal.command.AdminCommand;
 import me.modify.portaportal.command.PortaPortalCommand;
 import me.modify.portaportal.data.flatfile.ConfigFile;
 import me.modify.portaportal.data.flatfile.MessageFile;
-import me.modify.portaportal.hook.EssentialsHook;
+import me.modify.portaportal.hook.essentials.EssentialsHook;
 import me.modify.portaportal.hook.WorldEditHook;
 import me.modify.portaportal.portal.PortalListener;
 import org.bukkit.plugin.java.JavaPlugin;

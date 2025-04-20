@@ -56,6 +56,7 @@ public class PortalItem extends ItemStack {
             PortaLogger.error("Invalid portal material: " + materialRaw);
             PortaLogger.error("Portal material Options - SNOWBALL/ENDER_PEARL/EGG");
             setMaterial(Material.SNOWBALL);
+            return;
         }
 
         setMaterial(Material.valueOf(materialRaw.toUpperCase()));

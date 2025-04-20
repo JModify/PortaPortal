@@ -1,6 +1,7 @@
 package me.modify.portaportal.command;
 
 import me.modify.portaportal.PortaPortal;
+import me.modify.portaportal.portal.PortalDestinationRegistry;
 import me.modify.portaportal.portal.PortalItem;
 import me.modify.portaportal.util.Messenger;
 import org.bukkit.Bukkit;
@@ -27,6 +28,7 @@ public class AdminCommand extends PortaPortalCommand {
                 PortaPortal plugin = PortaPortal.getInstance();
                 plugin.getConfigFile().reload();
                 plugin.getMessageFile().reload();
+                PortalDestinationRegistry.getInstance().clear();
 
                 Messenger.sendMessage(commandSender, Messenger.Type.GENERAL, "reload-success");
                 return true;

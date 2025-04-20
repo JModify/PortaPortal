@@ -1,8 +1,6 @@
 package me.modify.portaportal.portal;
 
 import me.modify.portaportal.PortaPortal;
-import me.modify.portaportal.data.flatfile.ConfigFile;
-import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.HashMap;
@@ -29,7 +27,7 @@ public class PortalDestinationRegistry {
     private void add(UUID user) {
         FileConfiguration configFile = PortaPortal.getInstance().getConfigFile().getYaml();
         Destination destination = Destination.valueOf(configFile.getString("portal.destination.type",
-                Destination.SPAWN.name()));
+                Destination.SPAWN.name()).toUpperCase());
         registry.put(user, destination);
     }
 
@@ -43,5 +41,9 @@ public class PortalDestinationRegistry {
         }
 
         return registry.get(user);
+    }
+
+    public void clear() {
+        registry.clear();
     }
 }

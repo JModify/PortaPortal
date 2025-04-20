@@ -23,12 +23,22 @@ public class Messenger {
     public static void sendMessage(CommandSender sender, Type type, String identifier) {
         FileConfiguration messagesFile = PortaPortal.getInstance().getMessageFile().getYaml();
         String message = messagesFile.getString(type.getConfigSectionId() + "." + identifier);
+        if (message == null || message.isEmpty()) {
+            PortaLogger.error("Message for " + identifier + " is empty. Delete messages.yml and/or reload the plugin.");
+            return;
+        }
+
         sendMessage(sender, message, type);
     }
 
     public static void sendMessage(CommandSender sender, Type type, String identifier, Map<String, String> placeholders) {
         FileConfiguration messagesFile = PortaPortal.getInstance().getMessageFile().getYaml();
         String message = messagesFile.getString(type.getConfigSectionId() + "." + identifier);
+        if (message == null || message.isEmpty()) {
+            PortaLogger.error("Message for " + identifier + " is empty. Delete messages.yml and/or reload the plugin.");
+            return;
+        }
+
         sendMessage(sender, message, type, placeholders);
     }
 
