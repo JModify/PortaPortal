@@ -2,7 +2,7 @@
 PortaPortal is a Minecraft server plugin which adds throwable portals into the game. Upon portal item right click, a portal is built using a configured schematic file. Player(s) which run into this portal teleport to a configurable location, while the portal closes behind them soon after.
 
 ## Minecraft Version
-Supported Minecraft versions include: 1.21.x
+Supported Minecraft versions include: 1.16, 1.17, 1.18, 1.19, 1.20 and 1.21.
 Preceeding versions are planned for implementation in later updates.
 
 ## Dependencies
