@@ -8,6 +8,8 @@ error:
   player-only: "You must be a player to execute this command."
   player-not-found: "Player not found."
   invalid-quantity: "Quantity is not an integer."
+  portal-too-close: "Portal location is too close to another portal."
+  portal-cooldown: "Portal placement cooldown! %TIME% second(s) remaining."
 
 general:
   portal-teleport: "Teleported to %DESTINATION%."

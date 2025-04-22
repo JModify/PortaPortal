@@ -3,7 +3,6 @@ package me.modify.portaportal.portal.timer;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.World;
@@ -12,7 +11,6 @@ import lombok.Setter;
 import me.modify.portaportal.PortaPortal;
 import me.modify.portaportal.portal.PortalBlockRegistry;
 import me.modify.portaportal.util.Messenger;
-import me.modify.portaportal.util.PortaLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -52,21 +50,28 @@ public class PortalErasureTask implements Runnable {
 
         time += 1;
         if (time >= eraseTime) {
-            WorldEdit worldEdit = PortaPortal.getInstance().getWorldEditHook().getAPI().getWorldEdit();
+            erase();
 
-            EditSession undoSession = worldEdit.newEditSession(world);
-            session.undo(undoSession);
-
-            try {
-                Operations.complete(holder.createPaste(undoSession).build());
-                undoSession.close();
-            } catch (WorldEditException e) {
-                throw new RuntimeException(e);
-            }
-
-            PortalBlockRegistry.getInstance().removePortal(playerId);
-            PortalTaskManager.getInstance().remove(taskId);
+            PortalTaskManager manager = PortalTaskManager.getInstance();
+            manager.removeErasureTask(this);
+            manager.cancelTask(taskId);
         }
+    }
+
+    public void erase() {
+        WorldEdit worldEdit = PortaPortal.getInstance().getWorldEditHook().getAPI().getWorldEdit();
+
+        EditSession undoSession = worldEdit.newEditSession(world);
+        session.undo(undoSession);
+
+        try {
+            Operations.complete(holder.createPaste(undoSession).build());
+            undoSession.close();
+        } catch (WorldEditException e) {
+            throw new RuntimeException(e);
+        }
+
+        PortalBlockRegistry.getInstance().removePortal(playerId);
     }
 
     private void sendCountdown(int offset) {

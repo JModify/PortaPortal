@@ -9,6 +9,7 @@ import me.modify.portaportal.data.flatfile.MessageFile;
 import me.modify.portaportal.hook.essentials.EssentialsHook;
 import me.modify.portaportal.hook.WorldEditHook;
 import me.modify.portaportal.portal.PortalListener;
+import me.modify.portaportal.portal.timer.PortalTaskManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class PortaPortal extends JavaPlugin {
@@ -44,7 +45,7 @@ public final class PortaPortal extends JavaPlugin {
 
     @Override
     public void onDisable() {
-
+        PortalTaskManager.getInstance().shutdown();
     }
     
     private void registerCommands() {

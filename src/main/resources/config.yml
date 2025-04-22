@@ -10,8 +10,13 @@ portal:
       - "&7Right click to throw portal"
   # Duration a portal will stay open for before it disappears.
   duration: 5
+  # Player cooldown duration after placing a portal.
+  cooldown: 5
   # Should a portal disappear countdown should be sent to player.
   countdown: true
+  # Minimum amount of blocks between two portals. Denies portal placement if another portal is already within this range.
+  # Recommended to always be set at 10+ blocks.
+  portal-spacing: 20
   # Portal destination configuration
   destination:
     # Destination types: SPAWN, HOME, BED, CUSTOM

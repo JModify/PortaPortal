@@ -3,6 +3,8 @@ package me.modify.portaportal.portal;
 import me.modify.portaportal.PortaPortal;
 import me.modify.portaportal.portal.destination.PortalDestination;
 import me.modify.portaportal.portal.schem.PortalSchematic;
+import me.modify.portaportal.portal.timer.PlayerPortalCooldownTask;
+import me.modify.portaportal.portal.timer.PortalTaskManager;
 import me.modify.portaportal.util.Messenger;
 import me.modify.portaportal.util.MinecraftVersion;
 import me.modify.portaportal.util.PortaLogger;
@@ -14,6 +16,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -22,6 +25,8 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+
+import java.util.Map;
 
 public class PortalListener implements Listener {
 
@@ -55,7 +60,38 @@ public class PortalListener implements Listener {
         Location pasteLocation = block.getLocation();
         pasteLocation.setY(block.getY() + 2);
 
+        // Check if portal is too close to another portal
+        if (PortalBlockRegistry.getInstance().isCloseToPortal(pasteLocation)) {
+            Messenger.sendMessage(player, Messenger.Type.ERROR, "portal-too-close");
+            return;
+        }
+
         portalSchematic.pasteSchematicFacingPlayer(player, pasteLocation);
+        PortalTaskManager.getInstance().add(new PlayerPortalCooldownTask(player.getUniqueId()));
+    }
+
+    @EventHandler
+    public void onInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+
+        PortalTaskManager manager = PortalTaskManager.getInstance();
+        if (!manager.getCooldownTasks().containsKey(player.getUniqueId())) {
+            return;
+        }
+
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_AIR) {
+            return;
+        }
+
+        ItemStack item = event.getItem();
+        if (item == null) return;
+
+        if (PortalItem.isPortalitem(item)) {
+            Map<String, String> placeholders = Map.of("%TIME%",
+                    String.valueOf(manager.getCooldownTasks().get(player.getUniqueId()).getTimeRemaining()));
+            Messenger.sendMessage(player, Messenger.Type.ERROR, "portal-cooldown", placeholders);
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler

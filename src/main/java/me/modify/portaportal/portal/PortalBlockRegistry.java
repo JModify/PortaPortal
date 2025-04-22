@@ -1,6 +1,8 @@
 package me.modify.portaportal.portal;
 
+import me.modify.portaportal.PortaPortal;
 import org.bukkit.Location;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -51,6 +53,22 @@ public class PortalBlockRegistry {
             if (portalX == location.getBlockX()
                     && portalY == location.getBlockY()
                     && portalZ == location.getBlockZ()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isCloseToPortal(Location location) {
+        FileConfiguration fileConfiguration = PortaPortal.getInstance().getConfigFile().getYaml();
+        int portalSpacing = fileConfiguration.getInt("portal.portal-spacing", 20);
+
+        for (Location portalLocation : registry.keySet()) {
+            if (!portalLocation.getWorld().equals(location.getWorld())) {
+                continue;
+            }
+
+            if (portalLocation.distance(location) <= portalSpacing) {
                 return true;
             }
         }
