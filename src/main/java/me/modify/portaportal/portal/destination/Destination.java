@@ -1,6 +1,4 @@
-package me.modify.portaportal.portal;
-
-import org.jetbrains.annotations.NotNull;
+package me.modify.portaportal.portal.destination;
 
 public enum Destination {
 

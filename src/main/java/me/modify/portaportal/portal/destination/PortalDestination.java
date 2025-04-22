@@ -1,4 +1,4 @@
-package me.modify.portaportal.portal;
+package me.modify.portaportal.portal.destination;
 
 import lombok.Setter;
 import me.modify.portaportal.PortaPortal;
@@ -49,11 +49,12 @@ public class PortalDestination {
             }
             case BED -> {
                 // If bed respawn point is not set
-                if (player.getRespawnLocation() == null) {
+                Location bedSpawnLocation = player.getBedSpawnLocation();
+                if (bedSpawnLocation == null) {
                     setPortalDestination(Destination.SPAWN);
                     return defaultDestination;
                 }
-                return player.getRespawnLocation();
+                return bedSpawnLocation;
             }
             case CUSTOM -> {
                 return readCustomDestinationConfig(); // use custom config location

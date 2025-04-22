@@ -1,4 +1,4 @@
-package me.modify.portaportal.portal;
+package me.modify.portaportal.portal.destination;
 
 import me.modify.portaportal.PortaPortal;
 import org.bukkit.configuration.file.FileConfiguration;

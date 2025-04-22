@@ -1,4 +1,4 @@
-package me.modify.portaportal.portal;
+package me.modify.portaportal.portal.schem;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -18,11 +18,10 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import me.modify.portaportal.PortaPortal;
 import me.modify.portaportal.exceptions.NullWorldException;
+import me.modify.portaportal.portal.PortalBlockRegistry;
 import me.modify.portaportal.portal.timer.PortalErasureTask;
 import me.modify.portaportal.portal.timer.PortalTaskManager;
-import me.modify.portaportal.util.PortaLogger;
 import org.bukkit.Location;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
@@ -31,56 +30,19 @@ import java.io.*;
 public class PortalSchematic {
 
     private final String DEFAULT_SCHEMATIC = "portal.schem";
-    private final String schematicName;
+    private File schematicFile;
+    private Clipboard clipboard;
 
     public PortalSchematic() {
-        this.schematicName = DEFAULT_SCHEMATIC;
-    }
-
-    public PortalSchematic(String schematicName) {
-        this.schematicName = schematicName;
-    }
-
-    private File getFile() {
-        File pluginDataFolder = PortaPortal.getInstance().getDataFolder();
-        File schematicsFolder = new File(pluginDataFolder, "data");
-
-        if (!schematicsFolder.exists()) {
-            schematicsFolder.mkdirs();
-        }
-
-        File schematicFile = new File(schematicsFolder, schematicName);
-
-        // If schematics file does not exist in data folder, copy the default one.
-        if (!schematicFile.exists()) {
-            try (InputStream inputStream = PortaPortal.getInstance().getResource("data/default-portal.schem");
-                 FileOutputStream outputStream = new FileOutputStream(schematicFile)) {
-
-                if (inputStream == null) {
-                    PortaLogger.error("Could not find default-portal.schem in resources!");
-                    return null;
-                }
-
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
-                }
-
-                PortaLogger.info("Copied default-portal.schem to " + schematicFile.getAbsolutePath());
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        return schematicFile;
+        schematicFile = PortalSchematicFile.getFile();
     }
 
     public Clipboard load() {
-        Clipboard clipboard;
+        if (clipboard != null) {
+            return clipboard;
+        }
+
         try {
-            File schematicFile = getFile();
             if (schematicFile == null) {
                 return null;
             }
@@ -108,7 +70,6 @@ public class PortalSchematic {
 
         WorldEdit worldEdit = PortaPortal.getInstance().getWorldEditHook().getAPI().getWorldEdit();
         EditSession editSession = worldEdit.newEditSession(weWorld);
-        //editSession.setTrackingHistory(true);
 
         Operations.complete(holder.createPaste(editSession)
                 .to(BlockVector3.at(location.getX(), location.getY(), location.getZ()))
@@ -156,7 +117,8 @@ public class PortalSchematic {
                 // Replace air blocks with water (portal block)
                 if (blockState.getBlockType() == BlockTypes.AIR) {
                     if (clipboard.setBlock(blockVector3, BlockTypes.WATER.getDefaultState())) {
-                        registerPortalBlock(player, blockVector3, clipboard, pasteLocation, rotationDegrees);
+                        Location rotatedLocation = getRotatedLocation(blockVector3, clipboard, pasteLocation, rotationDegrees);
+                        PortalBlockRegistry.getInstance().addPortal(rotatedLocation, player.getUniqueId());
                     }
                 }
             } catch (WorldEditException e) {
@@ -173,18 +135,16 @@ public class PortalSchematic {
         }
     }
 
-    private void registerPortalBlock(Player player, BlockVector3 blockVector3, Clipboard clipboard,
-                                     Location pasteLocation, int rotationDegrees) {
-        double x = pasteLocation.getX() + (blockVector3.x() - clipboard.getOrigin().x());
-        double y = pasteLocation.getY() + (blockVector3.y() - clipboard.getOrigin().y());
-        double z = pasteLocation.getZ() + (blockVector3.z() - clipboard.getOrigin().z());
+    private Location getRotatedLocation(BlockVector3 blockVector3, Clipboard clipboard,
+                                        Location pasteLocation, int rotationDegrees) {
+        double x = pasteLocation.getX() + (blockVector3.getX() - clipboard.getOrigin().getX());
+        double y = pasteLocation.getY() + (blockVector3.getY() - clipboard.getOrigin().getY());
+        double z = pasteLocation.getZ() + (blockVector3.getZ() - clipboard.getOrigin().getZ());
 
         Location portalLocation = new Location(pasteLocation.getWorld(), x, y, z);
         Location axis = new Location(pasteLocation.getWorld(), pasteLocation.getBlockX(),
                 pasteLocation.getBlockY(), pasteLocation.getBlockZ());
-        Location rotatedLocation = rotateLocation(portalLocation, axis, rotationDegrees);
-
-        PortalBlockRegistry.getInstance().addPortal(rotatedLocation, player.getUniqueId());
+        return rotateLocation(portalLocation, axis, rotationDegrees);
     }
 
     private Location rotateLocation(Location loc, Location axis, double angle) {

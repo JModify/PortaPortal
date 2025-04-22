@@ -1,7 +1,7 @@
 package me.modify.portaportal.command;
 
 import me.modify.portaportal.PortaPortal;
-import me.modify.portaportal.portal.PortalDestinationRegistry;
+import me.modify.portaportal.portal.destination.PortalDestinationRegistry;
 import me.modify.portaportal.portal.PortalItem;
 import me.modify.portaportal.util.Messenger;
 import org.bukkit.Bukkit;

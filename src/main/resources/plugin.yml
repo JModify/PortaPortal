@@ -1,7 +1,7 @@
 name: PortaPortal
 version: 1.0.0
 main: me.modify.portaportal.PortaPortal
-api-version: '1.21'
+api-version: '1.16'
 depend: [WorldEdit]
 softdepend: [Essentials]
 authors: [modify]

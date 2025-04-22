@@ -1,7 +1,12 @@
 package me.modify.portaportal.portal;
 
 import me.modify.portaportal.PortaPortal;
+import me.modify.portaportal.portal.destination.PortalDestination;
+import me.modify.portaportal.portal.schem.PortalSchematic;
 import me.modify.portaportal.util.Messenger;
+import me.modify.portaportal.util.MinecraftVersion;
+import me.modify.portaportal.util.PortaLogger;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -11,18 +16,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.projectiles.ProjectileSource;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
 
 public class PortalListener implements Listener {
 
