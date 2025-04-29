@@ -1,24 +1,21 @@
-package me.modify.portaportal.portal.timer;
+package me.modify.portaportal.timer.cooldown;
 
 import lombok.Getter;
 import lombok.Setter;
 import me.modify.portaportal.PortaPortal;
+import me.modify.portaportal.timer.PortaTask;
+import me.modify.portaportal.timer.PortaTaskManager;
 
 import java.util.UUID;
 
-public class PlayerPortalCooldownTask implements Runnable{
-
-    @Getter @Setter
-    int taskId;
+public class CooldownTask extends PortaTask {
 
     private int time;
     private final int cooldown;
 
-    @Getter
-    private final UUID playerId;
+    public CooldownTask(UUID playerId) {
+        super(playerId);
 
-    public PlayerPortalCooldownTask(UUID playerId) {
-        this.playerId = playerId;
         this.time = 0;
         this.cooldown = PortaPortal.getInstance().getConfigFile().getYaml().getInt("portal.cooldown", 5);
     }
@@ -27,8 +24,9 @@ public class PlayerPortalCooldownTask implements Runnable{
     public void run() {
         time += 1;
         if (time >= cooldown) {
-            PortalTaskManager.getInstance().removeCooldownTask(playerId);
-            PortalTaskManager.getInstance().cancelTask(taskId);
+            PortaTaskManager manager = PortaTaskManager.getInstance();
+            manager.getCooldownController().remove(playerId);
+            manager.getCooldownController().cancelTask(taskId);
         }
     }
 

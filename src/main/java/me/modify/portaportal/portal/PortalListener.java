@@ -1,14 +1,11 @@
 package me.modify.portaportal.portal;
 
 import me.modify.portaportal.PortaPortal;
-import me.modify.portaportal.portal.destination.PortalDestination;
+import me.modify.portaportal.portal.destination.PortalDestinationHandler;
 import me.modify.portaportal.portal.schem.PortalSchematic;
-import me.modify.portaportal.portal.timer.PlayerPortalCooldownTask;
-import me.modify.portaportal.portal.timer.PortalTaskManager;
+import me.modify.portaportal.timer.cooldown.CooldownTask;
+import me.modify.portaportal.timer.PortaTaskManager;
 import me.modify.portaportal.util.Messenger;
-import me.modify.portaportal.util.MinecraftVersion;
-import me.modify.portaportal.util.PortaLogger;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -67,15 +64,15 @@ public class PortalListener implements Listener {
         }
 
         portalSchematic.pasteSchematicFacingPlayer(player, pasteLocation);
-        PortalTaskManager.getInstance().add(new PlayerPortalCooldownTask(player.getUniqueId()));
+        PortaTaskManager.getInstance().getCooldownController().add(new CooldownTask(player.getUniqueId()), 0L, 20L);
     }
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
-        PortalTaskManager manager = PortalTaskManager.getInstance();
-        if (!manager.getCooldownTasks().containsKey(player.getUniqueId())) {
+        PortaTaskManager manager = PortaTaskManager.getInstance();
+        if (!manager.getCooldownController().isCooldown(player.getUniqueId())) {
             return;
         }
 
@@ -88,7 +85,7 @@ public class PortalListener implements Listener {
 
         if (PortalItem.isPortalitem(item)) {
             Map<String, String> placeholders = Map.of("%TIME%",
-                    String.valueOf(manager.getCooldownTasks().get(player.getUniqueId()).getTimeRemaining()));
+                    String.valueOf(manager.getCooldownController().getCooldownTime(player.getUniqueId())));
             Messenger.sendMessage(player, Messenger.Type.ERROR, "portal-cooldown", placeholders);
             event.setCancelled(true);
         }
@@ -127,7 +124,7 @@ public class PortalListener implements Listener {
         if (player.getLocation().getBlock().getType() != Material.WATER) return;
         if (!PortalBlockRegistry.getInstance().isPortal(player.getLocation())) return;
 
-        PortalDestination destination = new PortalDestination(player);
+        PortalDestinationHandler destination = new PortalDestinationHandler(player);
         destination.teleport();
     }
 

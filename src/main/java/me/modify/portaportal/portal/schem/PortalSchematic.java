@@ -19,8 +19,9 @@ import com.sk89q.worldedit.world.block.BlockTypes;
 import me.modify.portaportal.PortaPortal;
 import me.modify.portaportal.exceptions.NullWorldException;
 import me.modify.portaportal.portal.PortalBlockRegistry;
-import me.modify.portaportal.portal.timer.PortalErasureTask;
-import me.modify.portaportal.portal.timer.PortalTaskManager;
+import me.modify.portaportal.timer.erasure.ErasureController;
+import me.modify.portaportal.timer.erasure.ErasureTask;
+import me.modify.portaportal.timer.PortaTaskManager;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -37,7 +38,7 @@ public class PortalSchematic {
         schematicFile = PortalSchematicFile.getFile();
     }
 
-    public Clipboard load() {
+    private Clipboard load() {
         if (clipboard != null) {
             return clipboard;
         }
@@ -77,7 +78,8 @@ public class PortalSchematic {
                 .build());
         editSession.close();
 
-        PortalTaskManager.getInstance().add(new PortalErasureTask(player.getUniqueId(), editSession, holder, weWorld));
+        ErasureController erasureController = PortaTaskManager.getInstance().getErasureController();
+        erasureController.add(new ErasureTask(player.getUniqueId(), editSession, holder, weWorld), 20L, 20L);
     }
 
     public void pasteSchematicFacingPlayer(Player player, Location pasteLocation) {

@@ -12,14 +12,14 @@ import org.bukkit.entity.Player;
 
 import java.util.Map;
 
-public class PortalDestination {
+public class PortalDestinationHandler {
 
     private Player player;
 
     @Setter
     private Destination portalDestination;
 
-    public PortalDestination(Player player) {
+    public PortalDestinationHandler(Player player) {
         this.player = player;
         this.portalDestination = getDestinationType();
     }

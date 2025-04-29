@@ -1,4 +1,4 @@
-package me.modify.portaportal.portal.timer;
+package me.modify.portaportal.timer.erasure;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.Setter;
 import me.modify.portaportal.PortaPortal;
 import me.modify.portaportal.portal.PortalBlockRegistry;
+import me.modify.portaportal.timer.PortaTask;
+import me.modify.portaportal.timer.PortaTaskManager;
 import me.modify.portaportal.util.Messenger;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -18,22 +20,18 @@ import org.bukkit.entity.Player;
 import java.util.Map;
 import java.util.UUID;
 
-public class PortalErasureTask implements Runnable {
-
-    @Getter @Setter
-    int taskId;
+public class ErasureTask extends PortaTask {
 
     private int time;
     private final int eraseTime;
-
-    private final UUID playerId;
 
     private final ClipboardHolder holder;
     private final EditSession session;
     private final World world;
 
-    public PortalErasureTask(UUID playerId, EditSession session, ClipboardHolder holder, World world) {
-        this.playerId = playerId;
+    public ErasureTask(UUID playerId, EditSession session, ClipboardHolder holder, World world) {
+        super(playerId);
+
         this.session = session;
         this.holder = holder;
         this.world = world;
@@ -52,9 +50,9 @@ public class PortalErasureTask implements Runnable {
         if (time >= eraseTime) {
             erase();
 
-            PortalTaskManager manager = PortalTaskManager.getInstance();
-            manager.removeErasureTask(this);
-            manager.cancelTask(taskId);
+            PortaTaskManager manager = PortaTaskManager.getInstance();
+            manager.getErasureController().remove(playerId);
+            manager.getErasureController().cancelTask(taskId);
         }
     }
 
