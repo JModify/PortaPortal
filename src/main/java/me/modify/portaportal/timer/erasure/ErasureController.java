@@ -6,4 +6,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public class ErasureController extends TaskController<ErasureTask> {}
+public class ErasureController extends TaskController<ErasureTask> {
+
+    @Override
+    public void shutdown() {
+        tasks.values().forEach(ErasureTask::erase);
+        super.shutdown();
+    }
+}
