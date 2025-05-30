@@ -1,7 +1,8 @@
 package me.modify.portaportal.portal;
 
 import me.modify.portaportal.PortaPortal;
-import me.modify.portaportal.portal.destination.PortalDestinationHandler;
+import me.modify.portaportal.portal.block.PortalBlockData;
+import me.modify.portaportal.portal.block.PortalBlockRegistry;
 import me.modify.portaportal.portal.schem.PortalSchematic;
 import me.modify.portaportal.timer.cooldown.CooldownTask;
 import me.modify.portaportal.timer.PortaTaskManager;
@@ -63,7 +64,7 @@ public class PortalListener implements Listener {
             return;
         }
 
-        portalSchematic.pasteSchematicFacingPlayer(player, pasteLocation);
+        portalSchematic.pasteFacingPlayer(player, pasteLocation);
         PortaTaskManager.getInstance().getCooldownController().add(new CooldownTask(player.getUniqueId()), 0L, 20L);
     }
 
@@ -110,7 +111,7 @@ public class PortalListener implements Listener {
     public void onWaterFlow(BlockFromToEvent event) {
         // Cancel portal blocks from flowing water / lava everywhere
         if (event.getBlock().getType() == Material.WATER || event.getBlock().getType() == Material.LAVA) {
-            if (PortalBlockRegistry.getInstance().isPortal(event.getBlock().getLocation())) {
+            if (PortalBlockRegistry.getInstance().get(event.getBlock().getLocation()) != null) {
                 event.setCancelled(true);
             }
         }
@@ -122,10 +123,14 @@ public class PortalListener implements Listener {
         // Detection for when a player steps into a portal
         Player player = event.getPlayer();
         if (player.getLocation().getBlock().getType() != Material.WATER) return;
-        if (!PortalBlockRegistry.getInstance().isPortal(player.getLocation())) return;
 
-        PortalDestinationHandler destination = new PortalDestinationHandler(player);
-        destination.teleport();
+        PortalBlockData portalBlockData = PortalBlockRegistry.getInstance().get(player.getLocation());
+        if (portalBlockData == null) return;
+
+
+        player.teleport(portalBlockData.destination());
+        Map<String, String> teleportPlaceholders = Map.of("%DESTINATION%", portalBlockData.destinationType().name());
+        Messenger.sendMessage(player, Messenger.Type.GENERAL, "portal-teleport", teleportPlaceholders);
     }
 
     @EventHandler

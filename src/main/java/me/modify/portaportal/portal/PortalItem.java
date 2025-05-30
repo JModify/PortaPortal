@@ -17,17 +17,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+@Setter
 public class PortalItem extends ItemStack {
 
     private static final String tag = "portaportal";
 
-    @Setter
     private String itemName;
 
-    @Setter
     private List<String> itemLore;
 
-    @Setter
     private Material material;
 
     public PortalItem() {

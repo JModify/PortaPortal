@@ -1,4 +1,4 @@
-package me.modify.portaportal.portal.destination;
+package me.modify.portaportal.portal.block;
 
 public enum Destination {
 

@@ -1,13 +1,8 @@
 package me.modify.portaportal.timer;
 
 import lombok.Getter;
-import me.modify.portaportal.PortaPortal;
 import me.modify.portaportal.timer.cooldown.CooldownController;
 import me.modify.portaportal.timer.erasure.ErasureController;
-import me.modify.portaportal.timer.erasure.ErasureTask;
-import org.bukkit.Bukkit;
-
-import java.util.*;
 
 @Getter
 public class PortaTaskManager {

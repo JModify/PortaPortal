@@ -6,10 +6,8 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.World;
-import lombok.Getter;
-import lombok.Setter;
 import me.modify.portaportal.PortaPortal;
-import me.modify.portaportal.portal.PortalBlockRegistry;
+import me.modify.portaportal.portal.block.PortalBlockRegistry;
 import me.modify.portaportal.timer.PortaTask;
 import me.modify.portaportal.timer.PortaTaskManager;
 import me.modify.portaportal.util.Messenger;
@@ -69,7 +67,7 @@ public class ErasureTask extends PortaTask {
             throw new RuntimeException(e);
         }
 
-        PortalBlockRegistry.getInstance().removePortal(playerId);
+        PortalBlockRegistry.getInstance().removeByPlayer(playerId);
     }
 
     private void sendCountdown(int offset) {

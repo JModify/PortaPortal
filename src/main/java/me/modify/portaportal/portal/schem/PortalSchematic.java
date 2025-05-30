@@ -18,7 +18,7 @@ import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import me.modify.portaportal.PortaPortal;
 import me.modify.portaportal.exceptions.NullWorldException;
-import me.modify.portaportal.portal.PortalBlockRegistry;
+import me.modify.portaportal.portal.block.PortalBlockRegistry;
 import me.modify.portaportal.timer.erasure.ErasureController;
 import me.modify.portaportal.timer.erasure.ErasureTask;
 import me.modify.portaportal.timer.PortaTaskManager;
@@ -31,7 +31,9 @@ import java.io.*;
 public class PortalSchematic {
 
     private final String DEFAULT_SCHEMATIC = "portal.schem";
+
     private File schematicFile;
+
     private Clipboard clipboard;
 
     public PortalSchematic() {
@@ -62,7 +64,7 @@ public class PortalSchematic {
         return clipboard;
     }
 
-    private void pasteSchematic(Player player, ClipboardHolder holder, Location location)
+    private void paste(Player player, ClipboardHolder holder, Location location)
             throws WorldEditException, NullWorldException {
 
         if (location.getWorld() == null) return;
@@ -82,7 +84,7 @@ public class PortalSchematic {
         erasureController.add(new ErasureTask(player.getUniqueId(), editSession, holder, weWorld), 20L, 20L);
     }
 
-    public void pasteSchematicFacingPlayer(Player player, Location pasteLocation) {
+    public void pasteFacingPlayer(Player player, Location pasteLocation) {
         Clipboard clipboard = load();
         if (clipboard == null) {
             return;
@@ -120,7 +122,8 @@ public class PortalSchematic {
                 if (blockState.getBlockType() == BlockTypes.AIR) {
                     if (clipboard.setBlock(blockVector3, BlockTypes.WATER.getDefaultState())) {
                         Location rotatedLocation = getRotatedLocation(blockVector3, clipboard, pasteLocation, rotationDegrees);
-                        PortalBlockRegistry.getInstance().addPortal(rotatedLocation, player.getUniqueId());
+
+                        PortalBlockRegistry.getInstance().add(rotatedLocation, player);
                     }
                 }
             } catch (WorldEditException e) {
@@ -130,7 +133,7 @@ public class PortalSchematic {
 
         // Paste the clipboard with respect to holder
         try {
-            pasteSchematic(player, holder, pasteLocation);
+            paste(player, holder, pasteLocation);
             System.out.println("Pasting schematic at: " + pasteLocation);
         } catch (WorldEditException | NullWorldException e) {
             throw new RuntimeException(e);

@@ -9,6 +9,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Represents the file associated with the portal schematic (portal.schem).
+ */
 public class PortalSchematicFile {
 
     public static File getFile() {

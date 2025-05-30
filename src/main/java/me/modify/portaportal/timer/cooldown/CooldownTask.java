@@ -1,7 +1,5 @@
 package me.modify.portaportal.timer.cooldown;
 
-import lombok.Getter;
-import lombok.Setter;
 import me.modify.portaportal.PortaPortal;
 import me.modify.portaportal.timer.PortaTask;
 import me.modify.portaportal.timer.PortaTaskManager;

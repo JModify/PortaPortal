@@ -1,7 +1,5 @@
 package me.modify.portaportal.util;
 
-import me.modify.portaportal.PortaPortal;
-import me.modify.portaportal.portal.PortalBlockRegistry;
 import org.bukkit.Bukkit;
 
 public class MinecraftVersion {
